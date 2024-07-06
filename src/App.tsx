@@ -1,29 +1,40 @@
 import { styled } from 'styled-components';
+import { Outlet } from 'react-router-dom';
 
 const App = () => {
   return (
     <>
-      <Wrapper>
+      <TopRow>
         <Title>Opowiadania z Ventrilo</Title>
-      </Wrapper>
+      </TopRow>
+      <Wrapper2>
+        <Outlet />
+      </Wrapper2>
     </>
   );
 };
 
 const Title = styled.h1`
-  font-size: 3.2em;
+  font-size: 2.4em;
   line-height: 1.1;
   display: block;
 `;
 
-const Wrapper = styled('div')`
+const TopRow = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100%;
-  height: 100%;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  justify-content: flex-start;
+  padding: 0 2em 1em;
+  border-bottom: 2px solid rgba(255, 255, 255, 255);
+`;
+
+const Wrapper2 = styled(TopRow)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2em;
 `;
 
 export default App;
