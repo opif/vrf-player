@@ -26,10 +26,9 @@ const TopRow = styled.div`
   align-items: center;
   justify-content: flex-start;
   padding: 0 2em 1em;
-  border-bottom: 2px solid rgba(255, 255, 255, 255);
 `;
 
-const Wrapper2 = styled(TopRow)`
+const Wrapper2 = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
