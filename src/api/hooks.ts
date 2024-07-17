@@ -1,8 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import apiUrls from './urls';
 
-const useRecordingsQuery = () => {
-  return useQuery({ queryKey: [apiUrls.RECORDINGS.LIST, {}] });
-};
+import { QueryKey } from './queryConfig';
+import { ListResult } from './types';
 
-export { useRecordingsQuery };
+type MyQueryKey = string | QueryKey;
+
+// O extends UseQueryOptions = UseQueryOptions
+
+const useListQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
+  useBaseQuery<ListResult<T>>(queryKey, options);
+
+const useDataQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
+  useBaseQuery<T>(queryKey, options);
+
+const useBaseQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
+  useQuery<T>({ ...options, queryKey: Array.isArray(queryKey) ? queryKey : [queryKey] });
+
+export { useListQuery, useDataQuery, useBaseQuery };

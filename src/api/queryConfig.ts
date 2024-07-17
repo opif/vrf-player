@@ -5,7 +5,7 @@ import { composeUrl } from 'common/utils';
 import type { ApiUrl } from './urls';
 import { URLParams } from './types';
 
-export type QueryKey = [ApiUrl, URLParams];
+export type QueryKey = [ApiUrl, URLParams?];
 
 const defaultQueryFn: QueryFunction = async ({ queryKey }) => {
   if (!isQueryKey(queryKey)) {
@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
 });
 
 const isQueryKey = (queryKey: unknown): queryKey is QueryKey => {
-  return Array.isArray(queryKey) && queryKey.length >= 2;
+  return Array.isArray(queryKey) && queryKey.length >= 1;
 };
 
 export default queryClient;

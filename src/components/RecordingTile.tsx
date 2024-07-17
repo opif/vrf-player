@@ -1,24 +1,45 @@
-import { formatDuration } from 'common/utils';
 import styled from 'styled-components';
+import { formatDuration } from 'common/utils';
 
-interface Props {
-  id: number;
-  name: string;
-  date: string;
+import { Recording } from 'api/types';
+
+interface Props extends Recording {
   description?: string;
-  duration: number;
-  speakers: string[];
 }
 
-const RecordingTile = ({ id, name, date, description, duration, speakers }: Props) => (
+const RecordingTile = ({
+  id,
+  filename,
+  recDate,
+  recUsername,
+  duration,
+  speakerCount,
+  size,
+  codec,
+  codecformat,
+  comment,
+  copyright,
+  platform,
+  version,
+  url,
+}: Props) => (
   <Tile>
     <span>
-      {name} {id}
+      {filename} {id}
     </span>
-    <span>{date}</span>
-    <span>Duration: {formatDuration(duration)}</span>
-    <p>{description}</p>
-    <span>Speakers: {speakers.length}</span>
+    <span>{recDate}</span>
+    <span>{recUsername}</span>
+    <span>
+      {codec} {codecformat}
+    </span>
+    {size != null && <span>Size: {size}</span>}
+    {comment && <span>Comment: {comment}</span>}
+    {copyright && <span>Copyright: {copyright}</span>}
+    {platform && <span>Platform: {platform}</span>}
+    {version && <span>Version: {version}</span>}
+    {url && <span>{url}</span>}
+    {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
+    <span>Speakers: {speakerCount}</span>
   </Tile>
 );
 
