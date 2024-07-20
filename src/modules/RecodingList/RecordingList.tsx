@@ -11,29 +11,41 @@ const RecordingList = () => {
 
   return (
     <Column>
-      <Row>
-        {isPending && <h2>Loading...</h2>}
-        {isError && <h2>There was an error while loading the recording list</h2>}
+      {isPending && <h2>Loading...</h2>}
+      {isError && <h2>There was an error while loading the recording list</h2>}
+      <Grid>
         {recordings.map((recording) => (
           <RecordingTile key={recording.id} {...recording} />
         ))}
-      </Row>
+      </Grid>
     </Column>
   );
 };
 
 const Column = styled.div`
   display: flex;
-  box-sizing: border-box;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
 `;
 
-const Row = styled.div`
-  box-sizing: border-box;
+const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1em;
+  gap: 2em;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 500px) {
+    padding: 2em;
+  }
+
+  @media (min-width: 1120px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (min-width: 1600px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 export default RecordingList;

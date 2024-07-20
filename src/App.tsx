@@ -15,7 +15,7 @@ const App = () => {
 };
 
 const Title = styled.h1`
-  font-size: 2.4em;
+  font-size: 2.4rem;
   line-height: 1.1;
   display: block;
 `;

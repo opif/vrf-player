@@ -4,12 +4,16 @@ export type ListResult<T> = {
   list: T[];
 };
 
-export type ID = string & {
-  __brand: 'ID';
+export type ServerId = string & {
+  __brand: 'ServerId';
+};
+
+export type ServerTimestamp = string & {
+  __brand: 'ServerTimestamp';
 };
 
 export interface Segment {
-  id?: ID;
+  id?: ServerId;
   time: string | number;
   duration: string | number;
   username: string;
@@ -20,12 +24,12 @@ export interface Segment {
 }
 
 export interface Recording {
-  id?: ID;
+  id?: ServerId;
   filename: string;
-  recDate: string;
+  recDate: ServerTimestamp | null;
   segCount?: string | number;
   recUsername: string;
-  size: string | number;
+  size: number;
   codec: string | number;
   codecformat: string | number;
   comment: string;

@@ -1,14 +1,15 @@
 import styled from 'styled-components';
-import { formatDuration } from 'common/utils';
-
+import { describeCodec, formatDuration, formatSize } from 'common/utils';
 import { Recording } from 'api/types';
+
+import { Pill } from './Pill';
+import { Time } from './Time';
 
 interface Props extends Recording {
   description?: string;
 }
 
 const RecordingTile = ({
-  id,
   filename,
   recDate,
   recUsername,
@@ -19,37 +20,62 @@ const RecordingTile = ({
   codecformat,
   comment,
   copyright,
-  platform,
   version,
   url,
 }: Props) => (
   <Tile>
-    <span>
-      {filename} {id}
-    </span>
-    <span>{recDate}</span>
-    <span>{recUsername}</span>
-    <span>
-      {codec} {codecformat}
-    </span>
-    {size != null && <span>Size: {size}</span>}
+    <Row>
+      <FWrapper>FN: {filename}</FWrapper>
+      {recDate && <TimeWrapper dateTime={recDate} />}
+    </Row>
+    <span>Recorded by: {recUsername}</span>
+    {size != null && <span>Size: {formatSize(size)}</span>}
     {comment && <span>Comment: {comment}</span>}
     {copyright && <span>Copyright: {copyright}</span>}
-    {platform && <span>Platform: {platform}</span>}
-    {version && <span>Version: {version}</span>}
     {url && <span>{url}</span>}
-    {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
-    <span>Speakers: {speakerCount}</span>
+    <Row>
+      {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
+      <span>Speakers: {speakerCount}</span>
+    </Row>
+    <PillRow>
+      {version && <Pill>VT {version}</Pill>}
+      <Pill>{describeCodec(+codec, +codecformat)}</Pill>
+    </PillRow>
   </Tile>
 );
 
 const Tile = styled.div`
-  width: 100%;
-  margin: 2em;
-  padding: 1em;
-  border: 1px solid green;
   display: flex;
   flex-direction: column;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  box-shadow: 10px 10px 24px -5px rgba(66, 68, 90, 1);
+  transition: transform 200ms, box-shadow 200ms;
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 15px 15px 24px -5px rgba(66, 68, 90, 1);
+  }
+`;
+
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const FWrapper = styled.span`
+  word-break: break-all;
+`
+
+const TimeWrapper = styled(Time)`
+  margin-left: auto;
+`
+
+const PillRow = styled.div`
+  display: flex;
+  gap: 0.5em;
+  margin-top: auto;
 `;
 
 export default RecordingTile;
