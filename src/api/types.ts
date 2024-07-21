@@ -24,7 +24,7 @@ export interface Segment {
 }
 
 export interface Recording {
-  id?: ServerId;
+  id: ServerId;
   filename: string;
   recDate: ServerTimestamp | null;
   segCount?: string | number;

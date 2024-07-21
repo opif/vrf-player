@@ -1,6 +1,9 @@
 import styled from 'styled-components';
-import { describeCodec, formatDuration, formatSize } from 'common/utils';
+import { Link } from 'react-router-dom';
+
 import { Recording } from 'api/types';
+import { DownloadIcon } from 'assets/icons';
+import { describeCodec, formatDuration, formatSize } from 'common/utils';
 
 import { Pill } from './Pill';
 import { Time } from './Time';
@@ -10,6 +13,7 @@ interface Props extends Recording {
 }
 
 const RecordingTile = ({
+  id,
   filename,
   recDate,
   recUsername,
@@ -22,27 +26,41 @@ const RecordingTile = ({
   copyright,
   version,
   url,
-}: Props) => (
-  <Tile>
-    <Row>
-      <FWrapper>FN: {filename}</FWrapper>
-      {recDate && <TimeWrapper dateTime={recDate} />}
-    </Row>
-    <span>Recorded by: {recUsername}</span>
-    {size != null && <span>Size: {formatSize(size)}</span>}
-    {comment && <span>Comment: {comment}</span>}
-    {copyright && <span>Copyright: {copyright}</span>}
-    {url && <span>{url}</span>}
-    <Row>
-      {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
-      <span>Speakers: {speakerCount}</span>
-    </Row>
-    <PillRow>
-      {version && <Pill>VT {version}</Pill>}
-      <Pill>{describeCodec(+codec, +codecformat)}</Pill>
-    </PillRow>
-  </Tile>
-);
+}: Props) => {
+  return (
+    <Link to={`/${id}`}>
+      <Tile>
+        <Row>
+          <FWrapper>{filename}</FWrapper>
+          {recDate && <TimeWrapper dateTime={recDate} />}
+        </Row>
+        <span>By: {recUsername}</span>
+        {size != null && <span>Size: {formatSize(size)}</span>}
+        {comment && <span>Comment: {comment}</span>}
+        {copyright && <span>Copyright: {copyright}</span>}
+        {url && <span>{url}</span>}
+        <Row>
+          {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
+          <span>Speakers: {speakerCount}</span>
+        </Row>
+        <PillRow>
+          {version && <Pill>VT {version}</Pill>}
+          <Pill>{describeCodec(+codec, +codecformat)}</Pill>
+        </PillRow>
+        <PillRow>
+          <Pill>
+            <DownloadIcon size={16} />
+            MP3
+          </Pill>
+          <Pill>
+            <DownloadIcon size={16} />
+            VRF
+          </Pill>
+        </PillRow>
+      </Tile>
+    </Link>
+  );
+};
 
 const Tile = styled.div`
   display: flex;
@@ -51,7 +69,9 @@ const Tile = styled.div`
   border-radius: 10px;
   background-color: #f5f5f5;
   box-shadow: 10px 10px 24px -5px rgba(66, 68, 90, 1);
-  transition: transform 200ms, box-shadow 200ms;
+  transition:
+    transform 200ms,
+    box-shadow 200ms;
 
   &:hover {
     transform: translate(-2px, -2px);
@@ -66,11 +86,11 @@ const Row = styled.div`
 
 const FWrapper = styled.span`
   word-break: break-all;
-`
+`;
 
 const TimeWrapper = styled(Time)`
   margin-left: auto;
-`
+`;
 
 const PillRow = styled.div`
   display: flex;

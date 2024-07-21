@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 const Pill = styled.span`
+  display: flex;
+  align-items: center;
   font-size: 16px;
   font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas,
     'DejaVu Sans Mono', monospace;
