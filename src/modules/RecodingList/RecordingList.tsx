@@ -7,7 +7,7 @@ import { useRecordingsQuery } from './queries';
 const RecordingList = () => {
   const { isPending, isError, data } = useRecordingsQuery();
   console.log({ data });
-  const recordings = data?.list || [];
+  const recordings = data?.values || [];
 
   return (
     <Column>

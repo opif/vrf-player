@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { Recording } from 'api/types';
-import { DownloadIcon } from 'assets/icons';
-import { describeCodec, formatDuration, formatSize } from 'common/utils';
+// import { DownloadIcon } from 'assets/icons';
+import { formatDuration, formatSize } from 'common/utils';
 
 import { Pill } from './Pill';
 import { Time } from './Time';
@@ -15,39 +15,32 @@ interface Props extends Recording {
 const RecordingTile = ({
   id,
   filename,
-  recDate,
-  recUsername,
+  recordedAt,
+  recordedBy,
   duration,
   speakerCount,
   size,
-  codec,
-  codecformat,
-  comment,
-  copyright,
+  codecDescription,
   version,
-  url,
 }: Props) => {
   return (
     <Link to={`/${id}`}>
       <Tile>
         <Row>
           <FWrapper>{filename}</FWrapper>
-          {recDate && <TimeWrapper dateTime={recDate} />}
+          {recordedAt && <TimeWrapper dateTime={recordedAt} />}
         </Row>
-        <span>By: {recUsername}</span>
+        <span>By: {recordedBy}</span>
         {size != null && <span>Size: {formatSize(size)}</span>}
-        {comment && <span>Comment: {comment}</span>}
-        {copyright && <span>Copyright: {copyright}</span>}
-        {url && <span>{url}</span>}
         <Row>
           {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
           <span>Speakers: {speakerCount}</span>
         </Row>
         <PillRow>
           {version && <Pill>VT {version}</Pill>}
-          <Pill>{describeCodec(+codec, +codecformat)}</Pill>
+          <Pill>{codecDescription}</Pill>
         </PillRow>
-        <PillRow>
+        {/* <PillRow>
           <Pill>
             <DownloadIcon size={16} />
             MP3
@@ -56,7 +49,7 @@ const RecordingTile = ({
             <DownloadIcon size={16} />
             VRF
           </Pill>
-        </PillRow>
+        </PillRow> */}
       </Tile>
     </Link>
   );
@@ -73,8 +66,10 @@ const Tile = styled.div`
     transform 200ms,
     box-shadow 200ms;
 
+  color: ${({ theme }) => theme.font.color};
+
   &:hover {
-    transform: translate(-2px, -2px);
+    transform: translate(-5px, -5px);
     box-shadow: 15px 15px 24px -5px rgba(66, 68, 90, 1);
   }
 `;

@@ -1,7 +1,7 @@
 export type URLParams = Record<string, string | number | undefined>;
 
 export type ListResult<T> = {
-  list: T[];
+  values: T[];
 };
 
 export type ServerId = string & {
@@ -12,32 +12,29 @@ export type ServerTimestamp = string & {
   __brand: 'ServerTimestamp';
 };
 
-export interface Segment {
-  id?: ServerId;
-  time: string | number;
-  duration: string | number;
-  username: string;
-  filename: string;
-  segmentSize: string | number;
-  rate: string | number;
-  channelCount: string | number;
+interface DatabaseEntity {
+  id: ServerId;
+  createdAt?: ServerTimestamp;
+  modifiedAt?: ServerTimestamp;
 }
 
-export interface Recording {
-  id: ServerId;
+export interface Segment extends DatabaseEntity {
+  time: number;
+  duration: number;
+  username: string;
   filename: string;
-  recDate: ServerTimestamp | null;
-  segCount?: string | number;
-  recUsername: string;
-  size: number;
-  codec: string | number;
-  codecformat: string | number;
-  comment: string;
-  copyright: string;
+  segmentOrder: number;
+}
+
+export interface Recording extends DatabaseEntity {
+  filename: string;
+  recordedBy: string;
+  recordedAt: ServerTimestamp | null;
+  codecDescription: string;
   platform: string;
   version: string;
-  url: string;
-  duration?: number;
-  speakerCount?: number;
+  size: number;
+  duration: number;
+  speakerCount: number;
   segments?: Segment[];
 }

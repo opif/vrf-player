@@ -2,7 +2,7 @@ import { Svg, SvgProps } from './Svg';
 
 interface Props extends SvgProps {}
 
-const DownloadIcon = ({ ...props }: SvgProps) => (
+const DownloadIcon = ({ ...props }: Props) => (
   <Svg fill="none" viewBox="0 0 24 24" {...props}>
     <path
       stroke="currentColor"
