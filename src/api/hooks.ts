@@ -10,8 +10,12 @@ type MyQueryKey = string | QueryKey;
 const useListQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
   useBaseQuery<ListResult<T>>(queryKey, options);
 
-const useDataQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
-  useBaseQuery<T>(queryKey, options);
+const useDataQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) => {
+  const [url, params] = queryKey;
+  const { id } = params;
+
+  return useBaseQuery<T>(queryKey, { enabled: !!id, ...options });
+};
 
 const useBaseQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
   useQuery<T>({ ...options, queryKey: Array.isArray(queryKey) ? queryKey : [queryKey] });
