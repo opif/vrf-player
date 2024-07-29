@@ -65,4 +65,4 @@ const PushButton = styled.button`
   }
 `;
 
-export default PlayerUI;
+export { PlayerUI };

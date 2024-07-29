@@ -6,8 +6,8 @@ import { ThemeProvider } from 'styled-components';
 
 import queryClient from 'api/queryConfig';
 import { theme } from 'common/theme';
-import Recording from 'modules/Recording';
-import RecordingList from 'modules/RecodingList';
+import Recording from 'pages/Recording';
+import RecordingList from 'pages/RecodingList';
 
 import App from './App';
 import './index.css';

@@ -1,37 +1,55 @@
+import { useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Segment } from 'api/types';
 import { formatDuration } from 'common/utils';
 import { SpeakerFullIcon, SpeakerIcon } from 'assets/icons';
-import { useEffect } from 'react';
 
-interface Props {
+interface SegmentListProps {
   segments: Segment[];
-  active?: Set<number>;
+  activeSet?: Set<number>;
 }
 
-const SegmentList = ({ segments, active }: Props) => {
-  // useEffect(() => {
-  //   document.getElementById(`segment_${currentIndex}`)?.scrollIntoView();
-  // }, [currentIndex]);
+const SegmentList = ({ segments, activeSet }: SegmentListProps) => {
+  const firstSegmentOrder = useMemo(
+    () => Math.min(...Array.from(activeSet ?? [])),
+    [activeSet],
+  );
 
   return (
     <List>
       {segments.map((segment) => (
-        <ListItem
-          key={segment.segmentOrder}
-          id={`segment_${segment.segmentOrder}`}
-          $current={active?.has(segment.segmentOrder) ?? false}
-        >
-          {active?.has(segment.segmentOrder) ? (
-            <SpeakerFullIcon size={32} />
-          ) : (
-            <SpeakerIcon size={32} />
-          )}
-          {formatDuration(segment.duration / 1000)} {segment.username}
-        </ListItem>
+        <SegmentListItem
+          key={segment.id}
+          segment={segment}
+          isActive={!!activeSet?.has(segment.segmentOrder)}
+          isFirst={segment.segmentOrder === firstSegmentOrder}
+        />
       ))}
     </List>
+  );
+};
+
+interface SegmentProps {
+  segment: Segment;
+  isActive: boolean;
+  isFirst?: boolean;
+}
+
+const SegmentListItem = ({ segment, isActive, isFirst }: SegmentProps) => {
+  const liRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    if (isFirst) {
+      liRef.current?.scrollIntoView();
+    }
+  }, [isFirst]);
+
+  return (
+    <ListItem ref={liRef} $current={isActive}>
+      {isActive ? <SpeakerFullIcon size={32} /> : <SpeakerIcon size={32} />}
+      {formatDuration(segment.duration / 1000)} {segment.username}
+    </ListItem>
   );
 };
 
@@ -55,4 +73,4 @@ const ListItem = styled.li<{ $current: boolean }>`
     }}
 `;
 
-export default SegmentList;
+export { SegmentList };

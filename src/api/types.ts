@@ -36,5 +36,6 @@ export interface Recording extends DatabaseEntity {
   size: number;
   duration: number;
   speakerCount: number;
+  hash: string;
   segments?: Segment[];
 }

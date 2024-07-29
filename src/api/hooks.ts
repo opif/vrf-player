@@ -11,7 +11,7 @@ const useListQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
   useBaseQuery<ListResult<T>>(queryKey, options);
 
 const useDataQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) => {
-  const [url, params] = queryKey;
+  const [, params] = queryKey;
   const { id } = params;
 
   return useBaseQuery<T>(queryKey, { enabled: !!id, ...options });
