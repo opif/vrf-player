@@ -11,6 +11,7 @@ interface Sound {
 interface PlayerCallbacks {
   onProgress: Set<(time: number) => void>;
   onActivityChange: Set<(soundIds: Iterable<number>) => void>;
+  onStatusChange: Set<(status: PlayerStatus) => void>;
 }
 
 type ExtractSetArgument<T> = T extends Set<infer A> ? A : never;
@@ -20,7 +21,13 @@ type CallbackType =
   | {
       name: 'activityChange';
       callback: ExtractSetArgument<PlayerCallbacks['onActivityChange']>;
+    }
+  | {
+      name: 'statusChange';
+      callback: ExtractSetArgument<PlayerCallbacks['onStatusChange']>;
     };
+
+export type PlayerStatus = 'playing' | 'paused' | 'stopped' | 'finished';
 
 const MIN_BUFFER_SIZE = 3;
 const MIN_BUFFER_TIME_MS = 10000;
@@ -35,6 +42,7 @@ class MediaPlayer {
   private currentIndex = 0;
   private timeoutId = -1;
   private sounds: Sound[];
+  status: PlayerStatus;
 
   private buildSounds = (segments: Segment[]): Sound[] =>
     segments.map((segment) => ({
@@ -46,6 +54,7 @@ class MediaPlayer {
   private initializeCallbacks = (): PlayerCallbacks => ({
     onProgress: new Set(),
     onActivityChange: new Set(),
+    onStatusChange: new Set(),
   });
 
   private getSoundPath = (name: string) => {
@@ -57,7 +66,10 @@ class MediaPlayer {
     let bufferSize = 0;
     let bufferTime = 0;
 
-    while (bufferSize < MIN_BUFFER_SIZE || bufferTime < MIN_BUFFER_TIME_MS) {
+    while (
+      localIndex < this.sounds.length &&
+      (bufferSize < MIN_BUFFER_SIZE || bufferTime < MIN_BUFFER_TIME_MS)
+    ) {
       const index = localIndex;
       const sound = this.sounds[index];
 
@@ -67,7 +79,7 @@ class MediaPlayer {
           preload: true,
 
           // turn it down!
-          volume: 0.35,
+          // volume: 0.35,
         });
 
         howl.on('end', () => {
@@ -96,6 +108,13 @@ class MediaPlayer {
   };
 
   private prepareNextSound = () => {
+    if (this.currentIndex >= this.sounds.length) {
+      this.status = 'finished';
+      this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
+
+      return;
+    }
+
     const { time } = this.sounds[this.currentIndex];
     const timeout = Math.max(0, this.playbackStart + time - Date.now());
     this.updateSoundBuffer();
@@ -127,6 +146,7 @@ class MediaPlayer {
     this.sourcePath = vrfPath;
     this.sounds = this.buildSounds(segments);
     this.callbacks = this.initializeCallbacks();
+    this.status = 'stopped';
   }
 
   on = (cbConfig: CallbackType) => {
@@ -137,6 +157,11 @@ class MediaPlayer {
         break;
       case 'activityChange':
         this.callbacks.onActivityChange.add(cbConfig.callback);
+
+        break;
+      case 'statusChange':
+        this.callbacks.onStatusChange.add(cbConfig.callback);
+        this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
 
         break;
     }
@@ -159,6 +184,10 @@ class MediaPlayer {
         this.callbacks.onActivityChange.delete(cbConfig.callback);
 
         break;
+      case 'statusChange':
+        this.callbacks.onStatusChange.delete(cbConfig.callback);
+
+        break;
     }
   };
 
@@ -170,7 +199,22 @@ class MediaPlayer {
     this.playbackStart =
       this.pausedPosition === 0 ? Date.now() : Date.now() - this.pausedPosition;
     this.prepareNextSound();
+
+    this.status = 'playing';
+    this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
   };
+
+  // playOne = (id: number) => {
+  //   if (id >= this.sounds.length) {
+  //     return;
+  //   }
+  //   const sound = this.sounds[id];
+  //   const howl = new Howl({
+  //     src: [this.getSoundPath(sound.filename)],
+  //     preload: true,
+  //   });
+  //   howl.play();
+  // };
 
   pause = () => {
     for (const sound of this.currentSounds.values()) {
@@ -183,6 +227,9 @@ class MediaPlayer {
     }
 
     this.pausedPosition = Math.max(0, Date.now() - this.playbackStart);
+
+    this.status = 'paused';
+    this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
   };
 
   reset = () => {
@@ -198,8 +245,10 @@ class MediaPlayer {
     this.playbackStart = 0;
     this.pausedPosition = 0;
 
+    this.status = 'stopped';
     this.callbacks.onProgress.forEach((cb) => cb(0));
     this.callbacks.onActivityChange.forEach((cb) => cb([]));
+    this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
 
     if (this.timeoutId >= 0) {
       clearTimeout(this.timeoutId);
