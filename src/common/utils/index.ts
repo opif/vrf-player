@@ -1,3 +1,4 @@
+export { getVrfPath } from './getVrfPath';
 export { formatTimestamp } from './formatTimestamp';
 export { formatDuration } from './formatDuration';
 export { formatSize } from './formatSize';
