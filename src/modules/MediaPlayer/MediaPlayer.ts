@@ -9,13 +9,18 @@ interface Sound {
 }
 
 interface PlayerCallbacks {
-  onProgress?: (time: number) => void;
-  onActivityChange?: (soundIds: number[]) => void;
+  onProgress: Set<(time: number) => void>;
+  onActivityChange: Set<(soundIds: Iterable<number>) => void>;
 }
 
+type ExtractSetArgument<T> = T extends Set<infer A> ? A : never;
+
 type CallbackType =
-  | { name: 'progress'; callback: PlayerCallbacks['onProgress'] }
-  | { name: 'activityChange'; callback: PlayerCallbacks['onActivityChange'] };
+  | { name: 'progress'; callback: ExtractSetArgument<PlayerCallbacks['onProgress']> }
+  | {
+      name: 'activityChange';
+      callback: ExtractSetArgument<PlayerCallbacks['onActivityChange']>;
+    };
 
 const MIN_BUFFER_SIZE = 3;
 const MIN_BUFFER_TIME_MS = 10000;
@@ -23,7 +28,7 @@ const MIN_BUFFER_TIME_MS = 10000;
 class MediaPlayer {
   private currentSounds = new Map<number, Howl>();
   private bufferedSounds = new Map<number, Howl>();
-  private callbacks: PlayerCallbacks = {};
+  private callbacks: PlayerCallbacks;
   private sourcePath: string;
   private pausedPosition = 0;
   private playbackStart = 0;
@@ -37,6 +42,11 @@ class MediaPlayer {
       duration: segment.duration,
       filename: segment.filename + '.mp3',
     }));
+
+  private initializeCallbacks = (): PlayerCallbacks => ({
+    onProgress: new Set(),
+    onActivityChange: new Set(),
+  });
 
   private getSoundPath = (name: string) => {
     return this.sourcePath + '/' + name;
@@ -72,8 +82,8 @@ class MediaPlayer {
             this.currentSounds.delete(index);
           }
 
-          this.callbacks.onProgress?.(sound.time + sound.duration);
-          this.callbacks.onActivityChange?.(Array.from(this.currentSounds.keys()));
+          this.callbacks.onProgress.forEach((cb) => cb(sound.time + sound.duration));
+          this.callbacks.onActivityChange.forEach((cb) => cb(this.currentSounds.keys()));
         });
 
         this.bufferedSounds.set(localIndex, howl);
@@ -101,8 +111,8 @@ class MediaPlayer {
       this.bufferedSounds.delete(this.currentIndex);
       this.currentSounds.set(this.currentIndex, sound);
 
-      this.callbacks.onActivityChange?.(Array.from(this.currentSounds.keys()));
-      console.log({ current: this.currentSounds });
+      this.callbacks.onActivityChange.forEach((cb) => cb(this.currentSounds.keys()));
+      console.log({ current: this.currentSounds, buffered: this.bufferedSounds });
 
       sound.play();
     } else {
@@ -116,22 +126,41 @@ class MediaPlayer {
   constructor(vrfPath: string, segments: Segment[]) {
     this.sourcePath = vrfPath;
     this.sounds = this.buildSounds(segments);
+    this.callbacks = this.initializeCallbacks();
   }
 
   on = (cbConfig: CallbackType) => {
     switch (cbConfig?.name) {
       case 'progress':
-        this.callbacks.onProgress = cbConfig.callback;
+        this.callbacks.onProgress.add(cbConfig.callback);
 
         break;
       case 'activityChange':
-        this.callbacks.onActivityChange = cbConfig.callback;
+        this.callbacks.onActivityChange.add(cbConfig.callback);
 
         break;
     }
   };
 
-  off = () => {};
+  off = (cbConfig?: CallbackType) => {
+    if (cbConfig === undefined) {
+      this.callbacks = this.initializeCallbacks();
+
+      return;
+    }
+
+    switch (cbConfig.name) {
+      case 'progress':
+        this.callbacks.onProgress.delete(cbConfig.callback);
+
+        break;
+
+      case 'activityChange':
+        this.callbacks.onActivityChange.delete(cbConfig.callback);
+
+        break;
+    }
+  };
 
   play = () => {
     for (const sound of this.currentSounds.values()) {
@@ -167,9 +196,10 @@ class MediaPlayer {
     this.bufferedSounds.clear();
     this.currentIndex = 0;
     this.playbackStart = 0;
+    this.pausedPosition = 0;
 
-    this.callbacks.onProgress?.(0);
-    this.callbacks.onActivityChange?.([]);
+    this.callbacks.onProgress.forEach((cb) => cb(0));
+    this.callbacks.onActivityChange.forEach((cb) => cb([]));
 
     if (this.timeoutId >= 0) {
       clearTimeout(this.timeoutId);

@@ -19,10 +19,9 @@ const Recording = () => {
     setProgress(time);
   };
 
-  const handleActivityChange = (segmentId: number[]) => {
-    const newSet = new Set<number>();
+  const handleActivityChange = (segmentId: Iterable<number>) => {
+    const newSet = new Set(segmentId);
 
-    segmentId.forEach((id) => newSet.add(id));
     setActivity(newSet);
   };
 
