@@ -1,12 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ServerId } from 'api/types';
-import PlayerUI from 'components/PlayerUI';
-import SegmentList from 'components/SegmentList';
-import { useRecordingQuery } from './queries';
+import { getVrfPath } from 'common/utils';
+import { PlayerUI } from 'components/PlayerUI';
+import { SegmentList } from 'components/SegmentList';
 import { MediaPlayer } from 'modules/MediaPlayer';
+import { PlayerStatus } from 'modules/MediaPlayer/MediaPlayer';
+
+import { useRecordingQuery } from './queries';
 
 const Recording = () => {
   const params = useParams();
@@ -14,6 +17,7 @@ const Recording = () => {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [activity, setActivity] = useState<Set<number>>();
+  const mediaPlayerRef = useRef<MediaPlayer>();
 
   const handleProgress = (time: number) => {
     setProgress(time);
@@ -26,32 +30,41 @@ const Recording = () => {
   };
 
   const handlePlay = () => {
-    setPlaying(true);
-
-    mediaPlayer?.play();
+    mediaPlayerRef.current?.play();
   };
 
   const handlePause = () => {
-    setPlaying(false);
-
-    mediaPlayer?.pause();
+    mediaPlayerRef.current?.pause();
   };
 
   const handleStop = () => {
-    setPlaying(false);
-
-    mediaPlayer?.reset();
+    mediaPlayerRef.current?.reset();
   };
 
-  const mediaPlayer = useMemo(() => {
-    if (!data?.segments) {
-      return null;
+  const handleStatusChange = (status: PlayerStatus) => {
+    if (status === 'playing') {
+      setPlaying(true);
+    } else {
+      setPlaying(false);
     }
-    const mediaPlayer = new MediaPlayer('/MP3', data.segments);
+  };
+
+  useEffect(() => {
+    if (!data?.segments) {
+      return;
+    }
+
+    const mediaPlayer = new MediaPlayer(getVrfPath(data.hash), data.segments);
     mediaPlayer.on({ name: 'progress', callback: handleProgress });
     mediaPlayer.on({ name: 'activityChange', callback: handleActivityChange });
+    mediaPlayer.on({ name: 'statusChange', callback: handleStatusChange });
 
-    return mediaPlayer;
+    mediaPlayerRef.current = mediaPlayer;
+
+    return () => {
+      mediaPlayerRef.current?.off();
+      mediaPlayerRef.current?.reset();
+    };
   }, [data]);
 
   return (
@@ -72,7 +85,7 @@ const Recording = () => {
         onPause={handlePause}
         onStop={handleStop}
       />
-      {data?.segments && <SegmentList segments={data.segments} active={activity} />}
+      {data?.segments && <SegmentList segments={data.segments} activeSet={activity} />}
     </Column>
   );
 };
