@@ -38,6 +38,12 @@ const Recording = () => {
     mediaPlayer?.pause();
   };
 
+  const handleStop = () => {
+    setPlaying(false);
+
+    mediaPlayer?.reset();
+  };
+
   const mediaPlayer = useMemo(() => {
     if (!data?.segments) {
       return null;
@@ -65,6 +71,7 @@ const Recording = () => {
         playing={playing}
         onPlay={handlePlay}
         onPause={handlePause}
+        onStop={handleStop}
       />
       {data?.segments && <SegmentList segments={data.segments} active={activity} />}
     </Column>

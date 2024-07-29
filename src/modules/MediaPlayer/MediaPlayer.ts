@@ -25,6 +25,7 @@ class MediaPlayer {
   private bufferedSounds = new Map<number, Howl>();
   private callbacks: PlayerCallbacks = {};
   private sourcePath: string;
+  private pausedPosition = 0;
   private playbackStart = 0;
   private currentIndex = 0;
   private timeoutId = -1;
@@ -56,7 +57,7 @@ class MediaPlayer {
           preload: true,
 
           // turn it down!
-          volume: 0.2,
+          volume: 0.35,
         });
 
         howl.on('end', () => {
@@ -86,7 +87,7 @@ class MediaPlayer {
 
   private prepareNextSound = () => {
     const { time } = this.sounds[this.currentIndex];
-    const timeout = this.playbackStart + time - Date.now();
+    const timeout = Math.max(0, this.playbackStart + time - Date.now());
     this.updateSoundBuffer();
 
     this.timeoutId = setTimeout(() => {
@@ -133,11 +134,12 @@ class MediaPlayer {
   off = () => {};
 
   play = () => {
-    // for (const sound of this.currentSounds.values()) {
-    //   sound.play();
-    // }
+    for (const sound of this.currentSounds.values()) {
+      sound.play();
+    }
 
-    this.playbackStart = Date.now();
+    this.playbackStart =
+      this.pausedPosition === 0 ? Date.now() : Date.now() - this.pausedPosition;
     this.prepareNextSound();
   };
 
@@ -150,6 +152,8 @@ class MediaPlayer {
       clearTimeout(this.timeoutId);
       this.timeoutId = -1;
     }
+
+    this.pausedPosition = Math.max(0, Date.now() - this.playbackStart);
   };
 
   reset = () => {
@@ -163,6 +167,9 @@ class MediaPlayer {
     this.bufferedSounds.clear();
     this.currentIndex = 0;
     this.playbackStart = 0;
+
+    this.callbacks.onProgress?.(0);
+    this.callbacks.onActivityChange?.([]);
 
     if (this.timeoutId >= 0) {
       clearTimeout(this.timeoutId);
