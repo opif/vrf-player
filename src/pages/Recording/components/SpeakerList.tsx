@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import styled from 'styled-components';
 
 import { Segment } from 'api/types';
@@ -24,17 +25,21 @@ const SpeakerList = ({ segments, activeSet }: SpeakerListProps) => {
   }, [activeSet]);
 
   return (
-    <FixedSizeList
-      ref={listRef}
-      height={600}
-      width="100%"
-      outerElementType="ul"
-      itemSize={LIST_ITEM_HEIGHT}
-      itemCount={segments.length}
-      itemData={{ segments, activeSet }}
-    >
-      {SpeakerListItem}
-    </FixedSizeList>
+    <AutoSizer>
+      {({ height, width }) => (
+        <FixedSizeList
+          ref={listRef}
+          height={height}
+          width={width}
+          outerElementType="ul"
+          itemSize={LIST_ITEM_HEIGHT}
+          itemCount={segments.length}
+          itemData={{ segments, activeSet }}
+        >
+          {SpeakerListItem}
+        </FixedSizeList>
+      )}
+    </AutoSizer>
   );
 };
 
