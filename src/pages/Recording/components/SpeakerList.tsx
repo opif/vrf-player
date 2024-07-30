@@ -53,9 +53,9 @@ const SpeakerListItem = ({ style, data, index }: ListChildComponentProps<ListDat
       <IconWrapper $size={32}>
         {isActive ? <SpeakerTwoIcon size={32} /> : <SpeakerIcon size={32} />}
       </IconWrapper>
-      <span>{formatDuration(segment.time / 1000)}</span>
+      <span>{formatDuration(segment.time)}</span>
       <ItemUsername>{segment.username}</ItemUsername>
-      <ItemDuration>[{formatDuration(segment.duration / 1000)}]</ItemDuration>
+      <ItemDuration>[{formatDuration(segment.duration, true)}]</ItemDuration>
     </ListItem>
   );
 };
@@ -73,6 +73,10 @@ const ListItem = styled.li<{ $current: boolean }>`
     $current && {
       color: 'green',
     }}
+
+  @media (min-width: 600px) {
+    padding: 0 1rem;
+  }
 `;
 
 const ItemUsername = styled.span`
@@ -82,7 +86,14 @@ const ItemUsername = styled.span`
 `;
 
 const ItemDuration = styled.span`
+  display: none;
   margin-left: auto;
+  font-style: italic;
+  font-size: ${({ theme }) => theme.font.size.small};
+
+  @media (min-width: 380px) {
+    display: inline;
+  }
 `;
 
 export { SpeakerList };

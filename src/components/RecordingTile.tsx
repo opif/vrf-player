@@ -33,7 +33,7 @@ const RecordingTile = ({
         <span>By: {recordedBy}</span>
         {size != null && <span>Size: {formatSize(size)}</span>}
         <Row>
-          {duration != null && <span>Duration: {formatDuration(duration / 1000)}</span>}
+          {duration != null && <span>Duration: {formatDuration(duration, true)}</span>}
           <span>Speakers: {speakerCount}</span>
         </Row>
         <PillRow>

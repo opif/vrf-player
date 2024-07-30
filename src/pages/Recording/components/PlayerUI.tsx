@@ -23,7 +23,7 @@ const PlayerUI = ({ duration, position, playing, ...rest }: Props) => {
           <ProgressBar max={duration} value={position} />
           {position !== undefined && (
             <TimestampRow>
-              {formatDuration(position / 1000)} / {formatDuration(duration / 1000)}
+              {formatDuration(position)} / {formatDuration(duration)}
             </TimestampRow>
           )}
         </ButtonRow>
