@@ -31,7 +31,6 @@ const SpeakerList = ({ segments, activeSet }: SpeakerListProps) => {
           ref={listRef}
           height={height}
           width={width}
-          outerElementType="ul"
           itemSize={LIST_ITEM_HEIGHT}
           itemCount={segments.length}
           itemData={{ segments, activeSet }}
@@ -67,7 +66,7 @@ const SpeakerListItem = ({ style, data, index }: ListChildComponentProps<ListDat
 
 const LIST_ITEM_HEIGHT = 36;
 
-const ListItem = styled.li<{ $current: boolean }>`
+const ListItem = styled.div<{ $current: boolean }>`
   display: flex;
   gap: 0.5rem;
   align-items: center;
