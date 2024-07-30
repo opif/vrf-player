@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import styled from 'styled-components';
 
 import { Segment } from 'api/types';
 import { formatDuration } from 'common/utils';
-import { SpeakerFullIcon, SpeakerIcon } from 'assets/icons';
+import { SpeakerTwoIcon, SpeakerIcon } from 'assets/icons';
 
 interface SegmentListProps {
   segments: Segment[];
@@ -11,66 +12,67 @@ interface SegmentListProps {
 }
 
 const SegmentList = ({ segments, activeSet }: SegmentListProps) => {
-  const firstSegmentOrder = useMemo(
-    () => Math.min(...Array.from(activeSet ?? [])),
-    [activeSet],
-  );
+  const listRef = useRef<FixedSizeList>(null);
+
+  useEffect(() => {
+    const firstActiveSegment = Math.min(...Array.from(activeSet ?? []));
+
+    if (Number.isFinite(firstActiveSegment)) {
+      listRef.current?.scrollToItem(firstActiveSegment, 'center');
+    }
+  }, [activeSet]);
 
   return (
-    <List>
-      {segments.map((segment) => (
-        <SegmentListItem
-          key={segment.id}
-          segment={segment}
-          isActive={!!activeSet?.has(segment.segmentOrder)}
-          isFirst={segment.segmentOrder === firstSegmentOrder}
-        />
-      ))}
-    </List>
+    <FixedSizeList
+      ref={listRef}
+      height={600}
+      width="100%"
+      outerElementType="ul"
+      itemSize={LIST_ITEM_HEIGHT}
+      itemCount={segments.length}
+      itemData={{ segments, activeSet }}
+    >
+      {SegmentListItem}
+    </FixedSizeList>
   );
 };
 
-interface SegmentProps {
-  segment: Segment;
-  isActive: boolean;
-  isFirst?: boolean;
+interface ListData {
+  segments: Segment[];
+  activeSet?: Set<number>;
 }
 
-const SegmentListItem = ({ segment, isActive, isFirst }: SegmentProps) => {
-  const liRef = useRef<HTMLLIElement>(null);
-
-  useEffect(() => {
-    if (isFirst) {
-      liRef.current?.scrollIntoView();
-    }
-  }, [isFirst]);
+const SegmentListItem = ({ style, data, index }: ListChildComponentProps<ListData>) => {
+  const activeSet = data.activeSet;
+  const segment = data.segments[index];
+  const isActive = activeSet?.has(segment.segmentOrder) || false;
 
   return (
-    <ListItem ref={liRef} $current={isActive}>
-      {isActive ? <SpeakerFullIcon size={32} /> : <SpeakerIcon size={32} />}
-      {formatDuration(segment.duration / 1000)} {segment.username}
+    <ListItem style={style} $current={isActive}>
+      {isActive ? <SpeakerTwoIcon size={32} /> : <SpeakerIcon size={32} />}
+      {formatDuration(segment.time / 1000)} {segment.username}
+      <ItemTimestamp>[{formatDuration(segment.duration / 1000)}]</ItemTimestamp>
     </ListItem>
   );
 };
 
-const List = styled.ul`
-  height: 600px;
-  overflow: scroll;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-`;
+const LIST_ITEM_HEIGHT = 36;
 
 const ListItem = styled.li<{ $current: boolean }>`
   display: flex;
   gap: 1em;
   align-items: center;
   padding: 2px;
+  height: ${LIST_ITEM_HEIGHT}px;
 
   ${({ $current }) =>
     $current && {
       color: 'green',
     }}
+`;
+
+const ItemTimestamp = styled.span`
+  margin-left: auto;
 `;
 
 export { SegmentList };
