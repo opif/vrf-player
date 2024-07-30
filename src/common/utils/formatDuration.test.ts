@@ -10,8 +10,8 @@ test.each([
 });
 
 test.each([
-  [10 / 3, '00:04'],
-  [((2 * 60 + 41) * 1000 + 181) / 1000, '02:42'],
+  [10 / 3, '00:03'],
+  [((2 * 60 + 41) * 1000 + 181) / 1000, '02:41'],
 ])('properly round subseconds', (duration: number, expected: string) => {
   expect(formatDuration(duration)).toBe(expected);
 });

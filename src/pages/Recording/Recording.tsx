@@ -78,8 +78,8 @@ const Recording = () => {
       <span>{data?.recordedAt}</span>
 
       <PlayerUI
-        value={progress}
-        max={data?.duration}
+        position={progress}
+        duration={data?.duration}
         playing={playing}
         onPlay={handlePlay}
         onPause={handlePause}
@@ -94,6 +94,7 @@ const Column = styled.section`
   display: flex;
   flex-direction: column;
   padding: 2em;
+  width: 100%;
 `;
 
 export default Recording;

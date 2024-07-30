@@ -1,21 +1,31 @@
 import { PauseIcon, PlayIcon, StopIcon } from 'assets/icons';
+import { formatDuration } from 'common/utils';
 import styled from 'styled-components';
 
 interface Props {
-  max?: number;
-  value?: number;
+  duration?: number;
+  position?: number;
   playing?: boolean;
   onPlay?: () => void;
   onPause?: () => void;
   onStop?: () => void;
 }
 
-const PlayerUI = ({ max, value, playing, onPlay, onPause, onStop }: Props) => {
+const PlayerUI = ({ duration, position, playing, onPlay, onPause, onStop }: Props) => {
   //
 
   return (
     <ButtonColumn>
-      {max && <progress max={max} value={value} />}
+      {duration && (
+        <ButtonRow>
+          <progress max={duration} value={position} />
+          {position !== undefined && (
+            <span>
+              {formatDuration(position / 1000)} / {formatDuration(duration / 1000)}
+            </span>
+          )}
+        </ButtonRow>
+      )}
       <ButtonRow>
         {playing ? (
           <PushButton onClick={onPause}>
