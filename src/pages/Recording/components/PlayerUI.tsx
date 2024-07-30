@@ -1,4 +1,4 @@
-import { PauseIcon, PlayIcon, StopIcon } from 'assets/icons';
+import { NextIcon, PauseIcon, PlayIcon, PrevIcon, StopIcon } from 'assets/icons';
 import { formatDuration } from 'common/utils';
 import styled from 'styled-components';
 
@@ -9,20 +9,22 @@ interface Props {
   onPlay?: () => void;
   onPause?: () => void;
   onStop?: () => void;
+  onNext?: () => void;
+  onPrev?: () => void;
 }
 
-const PlayerUI = ({ duration, position, playing, onPlay, onPause, onStop }: Props) => {
-  //
+const PlayerUI = ({ duration, position, playing, ...rest }: Props) => {
+  const { onPlay, onPause, onStop, onNext, onPrev } = rest;
 
   return (
     <ButtonColumn>
       {duration && (
         <ButtonRow>
-          <progress max={duration} value={position} />
+          <ProgressBar max={duration} value={position} />
           {position !== undefined && (
-            <span>
+            <TimestampRow>
               {formatDuration(position / 1000)} / {formatDuration(duration / 1000)}
-            </span>
+            </TimestampRow>
           )}
         </ButtonRow>
       )}
@@ -36,13 +38,34 @@ const PlayerUI = ({ duration, position, playing, onPlay, onPause, onStop }: Prop
             <PlayIcon size={48} />
           </PushButton>
         )}
-        <PushButton onClick={onStop}>
-          <StopIcon size={48} />
-        </PushButton>
+        {onPrev && (
+          <PushButton onClick={onPrev}>
+            <PrevIcon size={48} />
+          </PushButton>
+        )}
+        {onNext && (
+          <PushButton onClick={onNext}>
+            <NextIcon size={48} />
+          </PushButton>
+        )}
+        {onStop && (
+          <PushButton onClick={onStop}>
+            <StopIcon size={48} />
+          </PushButton>
+        )}
       </ButtonRow>
     </ButtonColumn>
   );
 };
+
+const TimestampRow = styled.span`
+  white-space: nowrap;
+  flex-shrink: 0;
+`;
+
+const ProgressBar = styled.progress`
+  width: 100%;
+`;
 
 const ButtonRow = styled.div`
   display: flex;

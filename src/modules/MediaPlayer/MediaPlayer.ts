@@ -206,6 +206,21 @@ class MediaPlayer {
     }
   };
 
+  skip = (howMany: number) => {
+    this.currentIndex += howMany - 1;
+    const sound = this.sounds[this.currentIndex];
+
+    if (sound) {
+      if (this.timeoutId >= 0) {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = -1;
+      }
+
+      this.playbackStart = Date.now() - sound.time;
+      this.prepareNextSound();
+    }
+  };
+
   play = () => {
     for (const sound of this.currentSounds.values()) {
       sound.play();

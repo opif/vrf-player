@@ -5,13 +5,14 @@ import styled from 'styled-components';
 import { Segment } from 'api/types';
 import { formatDuration } from 'common/utils';
 import { SpeakerTwoIcon, SpeakerIcon } from 'assets/icons';
+import { IconWrapper } from 'components/IconWrapper';
 
-interface SegmentListProps {
+interface SpeakerListProps {
   segments: Segment[];
   activeSet?: Set<number>;
 }
 
-const SegmentList = ({ segments, activeSet }: SegmentListProps) => {
+const SpeakerList = ({ segments, activeSet }: SpeakerListProps) => {
   const listRef = useRef<FixedSizeList>(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const SegmentList = ({ segments, activeSet }: SegmentListProps) => {
       itemCount={segments.length}
       itemData={{ segments, activeSet }}
     >
-      {SegmentListItem}
+      {SpeakerListItem}
     </FixedSizeList>
   );
 };
@@ -42,16 +43,19 @@ interface ListData {
   activeSet?: Set<number>;
 }
 
-const SegmentListItem = ({ style, data, index }: ListChildComponentProps<ListData>) => {
+const SpeakerListItem = ({ style, data, index }: ListChildComponentProps<ListData>) => {
   const activeSet = data.activeSet;
   const segment = data.segments[index];
   const isActive = activeSet?.has(segment.segmentOrder) || false;
 
   return (
     <ListItem style={style} $current={isActive}>
-      {isActive ? <SpeakerTwoIcon size={32} /> : <SpeakerIcon size={32} />}
-      {formatDuration(segment.time / 1000)} {segment.username}
-      <ItemTimestamp>[{formatDuration(segment.duration / 1000)}]</ItemTimestamp>
+      <IconWrapper $size={32}>
+        {isActive ? <SpeakerTwoIcon size={32} /> : <SpeakerIcon size={32} />}
+      </IconWrapper>
+      <span>{formatDuration(segment.time / 1000)}</span>
+      <ItemUsername>{segment.username}</ItemUsername>
+      <ItemDuration>[{formatDuration(segment.duration / 1000)}]</ItemDuration>
     </ListItem>
   );
 };
@@ -60,7 +64,7 @@ const LIST_ITEM_HEIGHT = 36;
 
 const ListItem = styled.li<{ $current: boolean }>`
   display: flex;
-  gap: 1em;
+  gap: 0.5rem;
   align-items: center;
   padding: 2px;
   height: ${LIST_ITEM_HEIGHT}px;
@@ -71,8 +75,14 @@ const ListItem = styled.li<{ $current: boolean }>`
     }}
 `;
 
-const ItemTimestamp = styled.span`
+const ItemUsername = styled.span`
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
+
+const ItemDuration = styled.span`
   margin-left: auto;
 `;
 
-export { SegmentList };
+export { SpeakerList };

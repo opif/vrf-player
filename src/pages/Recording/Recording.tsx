@@ -4,11 +4,11 @@ import styled from 'styled-components';
 
 import { ServerId } from 'api/types';
 import { getVrfPath } from 'common/utils';
-import { PlayerUI } from 'components/PlayerUI';
-import { SegmentList } from 'components/SegmentList';
 import { MediaPlayer } from 'modules/MediaPlayer';
 import { PlayerStatus } from 'modules/MediaPlayer/MediaPlayer';
 
+import { PlayerUI } from './components/PlayerUI';
+import { SpeakerList } from './components/SpeakerList';
 import { useRecordingQuery } from './queries';
 
 const Recording = () => {
@@ -41,6 +41,14 @@ const Recording = () => {
     mediaPlayerRef.current?.reset();
   };
 
+  const handleNext = () => {
+    mediaPlayerRef.current?.skip(1);
+  };
+
+  const handlePrev = () => {
+    mediaPlayerRef.current?.skip(-1);
+  };
+
   const handleStatusChange = (status: PlayerStatus) => {
     if (status === 'playing') {
       setPlaying(true);
@@ -69,13 +77,15 @@ const Recording = () => {
 
   return (
     <Column>
-      <h2>{data?.filename}</h2>
-      <span>{data?.recordedBy}</span>
-      <span>{data?.duration}</span>
-      <span>{data?.version}</span>
-      <span>{data?.platform}</span>
-      <span>{data?.codecDescription}</span>
-      <span>{data?.recordedAt}</span>
+      <InfoWrapper>
+        <h2>{data?.filename}</h2>
+        <span>{data?.recordedBy}</span>
+        <span>{data?.duration}</span>
+        <span>{data?.version}</span>
+        <span>{data?.platform}</span>
+        <span>{data?.codecDescription}</span>
+        <span>{data?.recordedAt}</span>
+      </InfoWrapper>
 
       <PlayerUI
         position={progress}
@@ -84,8 +94,10 @@ const Recording = () => {
         onPlay={handlePlay}
         onPause={handlePause}
         onStop={handleStop}
+        onNext={handleNext}
+        onPrev={handlePrev}
       />
-      {data?.segments && <SegmentList segments={data.segments} activeSet={activity} />}
+      {data?.segments && <SpeakerList segments={data.segments} activeSet={activity} />}
     </Column>
   );
 };
@@ -93,8 +105,13 @@ const Recording = () => {
 const Column = styled.section`
   display: flex;
   flex-direction: column;
-  padding: 2em;
   width: 100%;
+`;
+
+const InfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.5rem;
 `;
 
 export default Recording;
