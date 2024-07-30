@@ -17,7 +17,7 @@ const PlayerUI = ({ duration, position, playing, ...rest }: Props) => {
   const { onPlay, onPause, onStop, onNext, onPrev } = rest;
 
   return (
-    <ButtonColumn>
+    <ControlColumn>
       {duration && (
         <ButtonRow>
           <ProgressBar max={duration} value={position} />
@@ -54,7 +54,7 @@ const PlayerUI = ({ duration, position, playing, ...rest }: Props) => {
           </PushButton>
         )}
       </ButtonRow>
-    </ButtonColumn>
+    </ControlColumn>
   );
 };
 
@@ -69,12 +69,12 @@ const ProgressBar = styled.progress`
 
 const ButtonRow = styled.div`
   display: flex;
-  /* border: 1px solid green; */
-  /* border-radius: 5px; */
+  justify-content: space-between;
+  padding: 0 0.5rem;
   gap: 0.5em;
 `;
 
-const ButtonColumn = styled.div`
+const ControlColumn = styled.div`
   display: flex;
   flex-direction: column;
 `;
