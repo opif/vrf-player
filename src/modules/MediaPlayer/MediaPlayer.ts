@@ -31,6 +31,7 @@ export type PlayerStatus = 'playing' | 'paused' | 'stopped' | 'finished';
 
 const MIN_BUFFER_SIZE = 3;
 const MIN_BUFFER_TIME_MS = 10000;
+const PROGRESS_UPDATE_TIMEOUT = 1000;
 
 class MediaPlayer {
   private currentSounds = new Map<number, Howl>();
@@ -40,6 +41,7 @@ class MediaPlayer {
   private pausedPosition = 0;
   private playbackStart = 0;
   private currentIndex = 0;
+  private intervalId = -1;
   private timeoutId = -1;
   private sounds: Sound[];
   status: PlayerStatus;
@@ -56,6 +58,18 @@ class MediaPlayer {
     onActivityChange: new Set(),
     onStatusChange: new Set(),
   });
+
+  private stopTimers = () => {
+    if (this.timeoutId >= 0) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = -1;
+    }
+
+    if (this.intervalId >= 0) {
+      clearInterval(this.intervalId);
+      this.intervalId = -1;
+    }
+  };
 
   private getSoundPath = (name: string) => {
     return this.sourcePath + '/' + name;
@@ -109,6 +123,7 @@ class MediaPlayer {
 
   private prepareNextSound = () => {
     if (this.currentIndex >= this.sounds.length) {
+      this.stopTimers();
       this.status = 'finished';
       this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
 
@@ -202,30 +217,20 @@ class MediaPlayer {
 
     this.status = 'playing';
     this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
-  };
 
-  // playOne = (id: number) => {
-  //   if (id >= this.sounds.length) {
-  //     return;
-  //   }
-  //   const sound = this.sounds[id];
-  //   const howl = new Howl({
-  //     src: [this.getSoundPath(sound.filename)],
-  //     preload: true,
-  //   });
-  //   howl.play();
-  // };
+    this.intervalId = setInterval(() => {
+      const progress = Math.max(0, Date.now() - this.playbackStart);
+
+      this.callbacks.onProgress.forEach((cb) => cb(progress));
+    }, PROGRESS_UPDATE_TIMEOUT);
+  };
 
   pause = () => {
     for (const sound of this.currentSounds.values()) {
       sound.pause();
     }
 
-    if (this.timeoutId >= 0) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = -1;
-    }
-
+    this.stopTimers();
     this.pausedPosition = Math.max(0, Date.now() - this.playbackStart);
 
     this.status = 'paused';
@@ -250,10 +255,7 @@ class MediaPlayer {
     this.callbacks.onActivityChange.forEach((cb) => cb([]));
     this.callbacks.onStatusChange.forEach((cb) => cb(this.status));
 
-    if (this.timeoutId >= 0) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = -1;
-    }
+    this.stopTimers();
   };
 }
 
