@@ -3,4 +3,7 @@ export { PauseIcon } from './PauseIcon';
 export { StopIcon } from './StopIcon';
 export { PlayIcon } from './PlayIcon';
 export { SpeakerIcon } from './SpeakerIcon';
-export { SpeakerFullIcon } from './SpeakerFullIcon';
+export { SpeakerOneIcon } from './SpeakerOneIcon';
+export { SpeakerTwoIcon } from './SpeakerTwoIcon';
+export { SpeakerMutedIcon } from './SpeakerMutedIcon';
+export { SpeakerDisabledIcon } from './SpeakerDisabledIcon';

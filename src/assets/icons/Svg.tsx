@@ -20,7 +20,6 @@ const _Svg = ({ size, ...props }: SvgProps) => {
 
 const Svg = styled(_Svg)`
   display: inline;
-  color: ${({ theme }) => theme.font.color};
 `;
 
 export { Svg };
