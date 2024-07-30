@@ -2,6 +2,8 @@ export { DownloadIcon } from './DownloadIcon';
 export { PauseIcon } from './PauseIcon';
 export { StopIcon } from './StopIcon';
 export { PlayIcon } from './PlayIcon';
+export { NextIcon } from './NextIcon';
+export { PrevIcon } from './PrevIcon';
 export { SpeakerIcon } from './SpeakerIcon';
 export { SpeakerOneIcon } from './SpeakerOneIcon';
 export { SpeakerTwoIcon } from './SpeakerTwoIcon';
