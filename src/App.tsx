@@ -19,6 +19,10 @@ const Title = styled.h1`
   text-align: center;
   line-height: 1;
   display: block;
+
+  @media (min-height: 900px) {
+    padding: 1rem 0.5rem 1.5rem;
+  }
 `;
 
 export default App;
