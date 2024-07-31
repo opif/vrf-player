@@ -12,6 +12,7 @@ const _Time = ({ dateTime, ...rest }: Props) => (
     {formatTimestamp(dateTime).replace(/\s+/, '\n')}
   </time>
 );
+
 const Time = styled(_Time)`
   word-break: break-word;
   white-space: pre-line;

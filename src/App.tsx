@@ -4,36 +4,21 @@ import { Outlet } from 'react-router-dom';
 const App = () => {
   return (
     <>
-      <TopRow>
-        <Title>Opowiadania z Ventrilo</Title>
-      </TopRow>
-      <Wrapper2>
-        <Outlet />
-      </Wrapper2>
+      <Title>Opowiadania z Ventrilo</Title>
+      <Outlet />
     </>
   );
 };
 
 const Title = styled.h1`
+  margin: 0;
+  padding: 0.5rem;
+  color: #aebda4;
+  background: #272433;
   font-size: 2.4rem;
-  line-height: 1.1;
+  text-align: center;
+  line-height: 1;
   display: block;
-`;
-
-const TopRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 2em 1em;
-`;
-
-const Wrapper2 = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 2em;
 `;
 
 export default App;

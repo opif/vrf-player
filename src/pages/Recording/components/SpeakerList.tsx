@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+// import AutoSizer from 'react-virtualized-auto-sizer';
 import styled from 'styled-components';
 
 import { Segment } from 'api/types';
@@ -25,12 +25,16 @@ const SpeakerList = ({ segments, activeSet }: SpeakerListProps) => {
   }, [activeSet]);
 
   return (
-    <AutoSizer>
-      {({ height, width }) => (
+    <SizingWrapper>
+      {(height) => (
         <FixedSizeList
           ref={listRef}
           height={height}
-          width={width}
+          width="100%"
+          style={{
+            position: 'absolute',
+          }}
+          outerElementType={StyledOuter}
           itemSize={LIST_ITEM_HEIGHT}
           itemCount={segments.length}
           itemData={{ segments, activeSet }}
@@ -38,9 +42,52 @@ const SpeakerList = ({ segments, activeSet }: SpeakerListProps) => {
           {SpeakerListItem}
         </FixedSizeList>
       )}
-    </AutoSizer>
+    </SizingWrapper>
   );
 };
+
+interface Props {
+  children: (height: number) => React.ReactNode;
+}
+
+const SizingWrapper = (props: Props) => {
+  const [height, setHeight] = useState<number | null>(null);
+  const observerRef = useRef<ResizeObserver>();
+
+  const sizingRef = useCallback((node: HTMLDivElement) => {
+    if (node == null) {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    } else {
+      observerRef.current = new ResizeObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.contentRect) {
+            setHeight(entry.contentRect.height);
+          }
+        });
+      });
+
+      observerRef.current.observe(node);
+    }
+  }, []);
+
+  return (
+    <StyledDiv ref={sizingRef}>{height != null && props.children(height)}</StyledDiv>
+  );
+};
+
+const StyledDiv = styled.div`
+  flex: 1;
+  min-height: 100px;
+  position: relative;
+`;
+
+const StyledOuter = styled.div`
+  top: 0;
+  left: 0;
+  position: absolute;
+`;
 
 interface ListData {
   segments: Segment[];

@@ -78,13 +78,15 @@ const Recording = () => {
   return (
     <Column>
       <InfoWrapper>
-        <h2>{data?.filename}</h2>
-        <span>{data?.recordedBy}</span>
-        <span>{data?.duration}</span>
-        <span>{data?.version}</span>
-        <span>{data?.platform}</span>
-        <span>{data?.codecDescription}</span>
-        <span>{data?.recordedAt}</span>
+        <StyledFilename>{data?.filename}</StyledFilename>
+        <RecordingDetails>
+          <summary>Szczegóły nagrania ⓘ</summary>
+          <span>{data?.recordedAt}</span>
+          <span>Nagrywający: {data?.recordedBy}</span>
+          <span>Vent: {data?.version}</span>
+          <span>{data?.platform}</span>
+          <span>{data?.codecDescription}</span>
+        </RecordingDetails>
       </InfoWrapper>
 
       <PlayerUI
@@ -103,9 +105,36 @@ const Recording = () => {
 };
 
 const Column = styled.section`
+  flex: 1;
   display: flex;
   flex-direction: column;
   width: 100%;
+`;
+
+const StyledFilename = styled.span`
+  font-size: 1.5rem;
+  font-weight: bold;
+  word-break: break-all;
+`;
+
+const RecordingDetails = styled.details`
+  margin: 0;
+  display: flex;
+  padding: 0.25rem 1rem;
+  flex-direction: column;
+  border: 1px solid #eee;
+  border-radius: 8px;
+
+  &[open] {
+  }
+
+  & summary {
+    cursor: pointer;
+  }
+
+  &[open] summary {
+    border-bottom: 1px solid #eee;
+  }
 `;
 
 const InfoWrapper = styled.div`
