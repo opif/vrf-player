@@ -11,8 +11,12 @@ const RecordingList = () => {
 
   return (
     <Column>
-      {isPending && <h2>Loading...</h2>}
-      {isError && <h2>There was an error while loading the recording list</h2>}
+      {(isPending || isError) && (
+        <Header>
+          {isPending && <h2>Loading...</h2>}
+          {isError && <h2>There was an error while loading the recording list</h2>}
+        </Header>
+      )}
       <Grid>
         {recordings.map((recording) => (
           <RecordingTile key={recording.id} {...recording} />
@@ -28,6 +32,11 @@ const Column = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+`;
+
+const Header = styled.header`
+  padding: 1rem;
+  text-align: center;
 `;
 
 const Grid = styled.div`
