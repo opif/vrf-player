@@ -17,11 +17,11 @@ const RecordingList = () => {
           {isError && <h2>There was an error while loading the recording list</h2>}
         </Header>
       )}
-      <Grid>
+      <RecordingGrid>
         {recordings.map((recording) => (
           <RecordingTile key={recording.id} {...recording} />
         ))}
-      </Grid>
+      </RecordingGrid>
     </Column>
   );
 };
@@ -39,13 +39,14 @@ const Header = styled.header`
   text-align: center;
 `;
 
-const Grid = styled.div`
+const RecordingGrid = styled.div`
   display: grid;
-  gap: 2em;
+  gap: 2rem;
+  padding-bottom: 1rem;
   grid-template-columns: 1fr;
 
   @media (min-width: 500px) {
-    padding: 2em;
+    padding: 2rem;
   }
 
   @media (min-width: 1120px) {
