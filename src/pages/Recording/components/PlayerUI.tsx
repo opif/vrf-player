@@ -69,6 +69,7 @@ const ProgressBar = styled.progress`
 
 const ButtonRow = styled.div`
   display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 0 0.5rem;
   gap: 0.5em;

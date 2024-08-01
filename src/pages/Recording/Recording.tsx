@@ -125,9 +125,6 @@ const RecordingDetails = styled.details`
   border: 1px solid #eee;
   border-radius: 8px;
 
-  &[open] {
-  }
-
   & summary {
     cursor: pointer;
   }
