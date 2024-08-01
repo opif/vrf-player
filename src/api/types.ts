@@ -1,4 +1,4 @@
-export type URLParams = Record<string, string | number | undefined>;
+export type URLPathParams = Record<string, string | number | undefined>;
 
 export type ListResult<T> = {
   values: T[];
@@ -11,6 +11,11 @@ export type ServerId = string & {
 export type ServerTimestamp = string & {
   __brand: 'ServerTimestamp';
 };
+
+export interface ServerError {
+  code?: number;
+  message?: string;
+}
 
 interface DatabaseEntity {
   id: ServerId;

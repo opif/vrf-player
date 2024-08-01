@@ -1,11 +1,11 @@
 import { QueryClient, QueryFunction } from '@tanstack/react-query';
 
-import { composeUrl } from 'common/utils';
+import { buildUrl } from 'common/utils';
 
 import type { ApiUrl } from './urls';
-import { URLParams } from './types';
+import { URLPathParams } from './types';
 
-export type QueryKey = [ApiUrl, URLParams?];
+export type QueryKey = [ApiUrl, URLPathParams?, URLSearchParams?];
 
 const defaultQueryFn: QueryFunction = async ({ queryKey }) => {
   if (!isQueryKey(queryKey)) {
@@ -14,9 +14,9 @@ const defaultQueryFn: QueryFunction = async ({ queryKey }) => {
     return;
   }
 
-  const [endpoint, params] = queryKey;
+  const [endpoint, params, query] = queryKey;
 
-  const url = composeUrl(endpoint, params);
+  const url = buildUrl(endpoint, params, query);
   const data = await fetch(url).then((response) => response.json());
 
   return data;

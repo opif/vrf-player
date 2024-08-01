@@ -1,23 +1,21 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { QueryKey } from './queryConfig';
-import { ListResult } from './types';
+import { ListResult, ServerError, ServerId } from './types';
 
-type MyQueryKey = string | QueryKey;
+interface ListQueryOptions<T, E> extends UseQueryOptions<T, E> {}
 
-// O extends UseQueryOptions = UseQueryOptions
+const useListQuery = <T, E = ServerError, D = ListResult<T>>(
+  queryKey: QueryKey,
+  options?: ListQueryOptions<D, E>,
+) => useQuery<D, E>({ ...options, queryKey });
 
-const useListQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
-  useBaseQuery<ListResult<T>>(queryKey, options);
+interface DataQueryOptions<T, E> extends UseQueryOptions<T, E> {
+  id?: ServerId;
+}
 
-const useDataQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) => {
-  const [, params] = queryKey;
-  const { id } = params;
-
-  return useBaseQuery<T>(queryKey, { enabled: !!id, ...options });
+const useDataQuery = <T, E = ServerError>(options: DataQueryOptions<T, E>) => {
+  return useQuery<T, E>({ enabled: !!options?.id, ...options });
 };
 
-const useBaseQuery = <T, O = unknown>(queryKey: MyQueryKey, options?: O) =>
-  useQuery<T>({ ...options, queryKey: Array.isArray(queryKey) ? queryKey : [queryKey] });
-
-export { useListQuery, useDataQuery, useBaseQuery };
+export { useListQuery, useDataQuery };
